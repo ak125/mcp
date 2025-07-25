@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:*\"",
+    "dev": "npm run generate && concurrently \"npm run dev:*\"",
     "dev:mcp": "cd mcp-server && npm run dev",
     "dev:web": "cd web && npm run dev",
     "dev:backend": "cd backend && npm run dev",
-    "build": "npm run build:mcp && npm run build:web && npm run build:backend",
+    "build": "npm run generate && npm run build:mcp && npm run build:web && npm run build:backend",
     "build:mcp": "cd mcp-server && npm run build",
     "build:web": "cd web && npm run build",
     "build:backend": "cd backend && npm run build",
-    "generate": "cd mcp-server && npm run generate-types",
+    "generate": "npm run generate:types && npm run generate:api",
+    "generate:types": "node scripts/generate-types.js",
+    "generate:api": "node scripts/generate-api.js",
+    "generate:watch": "chokidar \"mcp-server/src/**/*.ts\" -c \"npm run generate\"",
+    "configure": "node scripts/configure-types.js",
+    "setup:dev": "node scripts/setup-dev-tools.js",
+    "test:e2e": "node tests/e2e.js",
+    "monitor": "curl -s http://localhost:3001/metrics || echo 'Server not running'",
     "db:push": "cd mcp-server && npx prisma db push",
     "install:all": "npm install && cd mcp-server && npm install && cd web && npm install && cd backend && npm install",
     "clean": "rm -rf */node_modules */dist */.next",
@@ -21,10 +28,14 @@
     "test:backend": "cd backend && npm test"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
     "@types/node": "^20.0.0",
-    "typescript": "^5.3.3",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.0.0",
     "prettier": "^3.0.0",
-    "eslint": "^8.0.0"
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
   }
 }
